@@ -1,196 +1,315 @@
-# Recurrent Neural Networks using TensorFlow Keras
+# Easily Build a Custom Language Analysis Model with Watson Knowledge Studio & NLU
 
-## WORKSHOP RESOURCES
-Login/Sign Up for IBM Cloud: https://ibm.biz/MEA-DataAI
 
-Hands-On Guide: https://ibm.biz/MEA-DataAI-NNLab
+## Workshop Resources
 
-Slides: https://ibm.biz/MEA-DataAI-NNSlides
+- Login/Sign Up for [IBM Cloud](https://ibm.biz/WKS_NLU)
+  
+- [Hands-On Guide](https://developer.ibm.com/tutorials/build-a-recommendation-engine-with-watson-natural-language-understanding/)
 
-Workshop Replay:  https://www.crowdcast.io/e/ddc-mea2021
+- Slides: <Link>
 
-Language Modeling is the task of assigning probabilities to sequences of words. Given a context of one or a sequence of words in the language that the language model was trained on, the model should provide the next most probable words or sequence of words that follows from the given sequence of words in the sentence. Language Modeling is one of the most important tasks in Natural Language Processing.
+- Workshop Replay: <Link>
+  
+- Survey [Here](https://ibm.biz/WKSNLUSurvey)  
 
-Recurrent neural networks (RNN) are a class of neural networks that is powerful for modeling sequence data such as time series or natural language. Basically an RNN uses a *for* loop and performs multiple iterations over the timesteps of a sequence while maintaining an internal state that encodes information about the timesteps it has seen so far. RNNs can easily be constructed using the Keras RNN API available within [TensorFlow](https://www.tensorflow.org) - an end-to-end open source machine learning platform that makes it easier to build and deploy machine learning models.
-
-[IBM's Watson&reg; Studio](https://www.ibm.com/cloud/watson-studio) is a data science platform that provides all the tools necessary to develop a data-centric solution on the cloud. It makes use of Apache Spark clusters to provide the computational power needed to develop complex machine learning models. You can choose to create assets in Python, Scala, and R, and leverage open source frameworks (such as TensorFlow) that are already installed on Watson&reg; Studio.
-
-In this tutorial, you will perform Language Modeling on the Penn Treebank dataset by creating a Recurrent Neural Network (RNN) using the Long Short-Term Memory unit and deploying it on IBM Watson&reg; Studio on IBM Cloud&reg; Pak for Data as a Service.
-
-## Learning objectives
-
-The goal of this tutorial is to import a Jupyter notebook written in Python into IBM Watson&reg; Studio on IBM Cloud&reg; Pak for Data as a Service and run through it. The notebook creates a Recurrent Neural Network model based on the Long Short-Term Memory unit to train and benchmark on the Penn Treebank dataset. By the end of this notebook, you should be able to understand how TensorFlow builds and executes a RNN model for Language Modeling. You'll learn how to:
-
-* Run a Jupyter Notebook using IBM Watson&reg; Studio on IBM Cloud&reg; Pak for Data as a Service.
-* Build a Recurrent Neural Network model using the Long Short-Term Memory unit for Language Modeling.
-* Train the model and evaluate the model by performing validation and testing.
-
+## Table of Contents
+1. [Prerequisites](#Prerequisites)
+1. [CodeLab](#CodeLab)  
+  
 ## Prerequisites
+  
+**Sign-up/Login to IBM Cloud**
 
-The following prerequisites are required to follow the tutorial:
+If you are an existing user please [login to IBM Cloud](https://ibm.biz/WKS_NLU)
 
-* An [IBM Cloud Account](https://cloud.ibm.com/registration?cm_sp=ibmdev-_-developer-tutorials-_-cloudreg)
-* [IBM Cloud Pak for Data](https://www.ibm.com/products/cloud-pak-for-data)
+And if you are not, don't worry! We have got you covered! There are 3 steps to create your account on [IBM Cloud](https://ibm.biz/WKS_NLU): <br>
+1- Put your email and password. <br>
+2- You get a verification link with the registered email to verify your account. <br>
+3- Fill the personal information fields. <br>
+** Please make sure you select the country you are in when asked at any step of the registration process.
+  
+<img width="1188" alt="Screen Shot 2021-05-31 at 11 25 01 AM" src="https://user-images.githubusercontent.com/15332386/120156441-0769d980-c203-11eb-8cb3-29f4a8d5616a.png">
 
-## Estimated time
 
-This tutorial will take approximately four hours to complete. The bulk of this time will be spent training/evaluating the LSTM model. You can refer the [reducing the notebook execution time](#-reducing-the-notebook-execution-time) section for methods to reduce the time required for execution.
+## CodeLab
 
-## Steps
+IBM&reg; Watson&trade; Knowledge Studio is a service that lets you create a customized language analysis model for a specific domain. This is especially useful for specialized industries with complex languages such as medicine, law, and finance.
 
-1. [Set up IBM Cloud Pak for Data as a Service](#set-up-ibm-cloud-pak-for-data-as-a-service)
-1. [Create a new project and import the notebook](#create-a-new-project-and-import-the-notebook)
-1. [Read through the notebook](#read-through-the-notebook)
-1. [Run the notebook](#run-the-notebook)
+In this tutorial, learn how to use Watson Knowledge Studio to annotate reviews for auto repair facilities. After annotating the reviews, you can then train a machine learning model that can analyze the reviews. The model is able to determine what types of repairs were needed by the vehicle and how satisfied the customer was with the quality of work. By analyzing the reviews associated with a given auto repair shop, you can generate insights about that shop's overall performance to determine what types of repairs they're most (and least) skilled at.
 
-### Set up IBM Cloud Pak for Data as a Service
 
-1. Open a browser, and log in to [IBM Cloud](https://cloud.ibm.com/login?cm_sp=ibmdev-_-developer-tutorials-_-cloudreg) with your IBM Cloud credentials.
+To follow this tutorial, you need an IBM Cloud account. If you don't have one, you can [create one](https://ibm.biz/WKS_NLU).
 
-    ![Log into IBM Cloud](images/log-into-ibm-cloud.png)
+### Provision a Watson Natural Language Understanding instance
 
-1. Type `Watson Studio` in the search bar at the top. If you already have an instance of Watson Studio, it should be visible. If so, click it. If not, click **Watson Studio** under Catalog Results to create a new service instance.
+After you have an IBM Cloud account, navigate to the main Dashboard
 
-    ![Select Watson Studio Service](images/select-watson-studio-service.png)
+1. Click **Catalog**.
+1. Search for **Natural Language Understanding**, and click the icon when it appears.
 
-1. Select the type of plan to create if you are creating a new service instance. A Lite (free) plan should suffice for this tutorial). Click **Create**.
+    ![NLP catalog icon](images/find_nlu.png)
 
-    ![Watson Studio Lite plan](images/watson-studio-lite-plan.png)
+1. Select a pricing plan for the  Watson Natural Language Understanding service, and click **Create**.
 
-1. Click **Get Started** on the landing page for the service instance.
+    ![Selecting pricing plan](images/create_nlu.png)
 
-    ![Get Started - Watson Studio](images/get-started-watson-studio.png)
+After the service is provisioned, store the API key and URL. These credentials are needed later in the tutorial.
 
-    This should take you to the landing page for IBM Cloud Pak for Data as a Service.
+### Provision a Watson Knowledge Studio instance
 
-1.  Click your avatar in the upper-right corner, then click **Profile and settings** under your name.
+To provision an IBM Watson Knowledge Studio instance:
 
-    ![CPDaaS - profile and settings](images/cpdaas-profile-and-settings.png)
+1. Click **Catalog**.
+1. Search for **Knowledge Studio**, and click the icon the icon when it appears.
 
-1. Switch to the Services tab. You should see the Watson Studio service instance listed under Your Cloud Pak for Data services.
+    ![Watson Knowledge Studio icon](images/image1.png)
 
-    You can also associate other services such as Watson Knowledge Catalog and Watson Machine Learning with your IBM Cloud Pak for Data as a Service account. These are listed under Try our available services.
+1. Select a pricing plan ("Lite" is sufficient here), and then click **Create**.
 
-    In the example shown here, a Watson Knowledge Catalog service instance already exists in the IBM Cloud account, so it's automatically associated with the IBM Cloud Pak for Data as a Service account. To add any other service (Watson Machine Learning in this example), click **Add** within the tile for the service under Try our available services.
+    ![Select pricing plan](images/image2.png)
 
-    ![CPDaaS - associated services](images/cpdaas-associated-services.png)
+1. Click **Launch Watson Knowledge Studio** after the service is provisioned.
 
-1. Select the type of plan to create (a Lite plan should suffice), and click **Create**.
+    ![Launching Watsob Knowledge Studio](images/image3.png)
 
-    ![Machine Learning Lite Plan](images/machine-learning-lite-plan.png)
+### Estimated time
 
-After the service instance is created, you are returned to the IBM Cloud Pak for Data as a Service instance. You should see that the service is now associated with your IBM Cloud Pak for Data as a Service account.
+It should take you approximately 60 minutes to complete the tutorial after you've completed the prerequisites.
 
-![CPDaas - all services associated](images/cpdaas-all-services-associated.png)
+### Steps
 
-### Create a new project and import the notebook
+1. [Define entity types and subtypes](define-entities-and-entity-subtypes)
+2. [Create "Relation Types"](create-relation-types)
+3. [Collect documents that describe your domain language](collect-documents-that-describe-your-domain-language)
+4. [Annotate Documents](annotate-documents)
+5. [Generate a Machine Learning Model](generate-a-machine-learning-model)
+6. [Deploy model to Natural Language Understanding service](deploy-model-to-natural-language-understanding-service)
 
-1. Navigate to the hamburger menu (☰) on the left, and choose **View all projects**. After the screen loads, click **New +** or **New project +** to create a new project.
+### Define entities and entity subtypes
 
-    ![CPDaas - new project](images/cpdaas-new-project.png)
+Begin by creating Entity Types. An entity is a representation of an object or concept. In this case, you'll create entities related to auto repairs such as a *Mechanic*, *Vehicle*, and *Repair*. First, you'll create a *Repair* entity, which describes the problem that the vehicle was serviced for.
 
-1. Select **Create an empty project**.
+1. Click **Entity Types** in the left menu.
 
-    ![CPDaaS - empty project](images/cpdaas-empty-project.png)
+1. Click **Add Entity Type**.
 
-1. Provide a name for the project. You must associate an IBM Cloud Object Storage instance with your project. If you already have an IBM Cloud Object Storage service instance in your IBM Cloud account, it should automatically be populated here. Otherwise, click **Add**.
+    ![Adding an entity](images/image6.png)
 
-    ![CPDaaS - project name](images/cpdaas-project-name.png)
+1. Label the new entity as a *Repair*.
 
-1. Select the type of plan to create (a Lite plan should suffice for this tutorial), and click **Create**.
+1. Add subtypes, which let you further classify an entity instance. For example, a reference to an alternator or spark plug can be labeled as an *Electrical* subtype of the *Repair* entity.
 
-    ![COS Lite plan](images/cos-lite-plan.png)
+    ![Adding subtypes](images/create_entity.png)
 
-1. Click **Refresh** on the project creation page.
+Now that you understand how to create entities, you can upload a preconfigured list of entity types. Download the [JSON types](https://github.com/IBM/virtual-insurance-assistant/blob/master/data/wks/types-8c501370-8411-11ea-9a22-cf86d29dec48.json), then click **Upload**.
 
-    ![CPDaaS - refresh COS](images/cpdaas-refresh-cos.png)
+![Uploading JSON file](images/upload_entity.png)
 
-1. Click **Create** after you see the IBM Cloud Object Storage instance you created displayed under Storage.
+After uploading and creating the entity types, click **Save**.
 
-    ![CPDaaS - create project](images/cpdaas-create-project.png)
+### Create Relation Types
 
-1. After the project is created, you can add the notebook to the project. Click **Add to project +**, and select **Notebook**.
+Relation Types describe how two entities are associated. For example, if you have a *Vehicle*, *Customer*, and *Mechanic*, the vehicle might have an *OwnedBy* relation with the customer and a *RepairedBy* relation with the mechanic.
 
-    ![CPDaaS - add notebook to project](images/cpdaas-add-notebook-to-project.png)
+1. Create relations by clicking **Relation Types** in the menu.
 
-1. Switch to the From URL tab. Provide the name of the notebook as `RecurrentNeuralNetworkUsingTensorFlow` and the Notebook URL as `https://raw.githubusercontent.com/IBM/dl-learning-path-assets/main/fundamentals-of-deeplearning/notebooks/RecurrentNeuralNetworkUsingTensorFlow.ipynb`.
+1. Click **Add Relation Types**.
 
-1. Under the Select runtime drop-down menu, select **Default Python 3.7 S (4 vCPU 16 GB RAM)**. Click **Create**.
+1. Name the relation type, and list the valid entity pairs that can have that relation.
 
-    ![CPDaaS - create notebook](images/cpdaas-create-notebook.png)
+    There should be a set of relation types already uploaded from the previous step. Examples in this case can be:
 
-1. After the Jupyter Notebook is loaded and the kernel is ready, you can start executing the cells in the notebook.
+    * RepairedBy (*Vehicle* can be repaired by a *Mechanic*)
+    * OwnedBy (*Vehicle* can be owned by a *Driver*)
+    * DamagedBy (*Vehicle* can be damaged by a *Driver* or *Mechanic*)
 
-    ![CPDaaS - notebook loaded](images/cpdaas-notebook-loaded.png)
+    ![Adding Relation Types](images/image8.png)
 
-> **Important**: *Make sure that you stop the kernel of your notebooks when you are done to conserve memory resources.*
+### Collect documents that describe your domain language
 
-![Stop kernel](images/JupyterStopKernel.png)
+Collect files that contain text examples that describe automobile damage and repairs. These examples let Watson Knowledge Studio learn the relevant *domain language*, which consists of terms and phrases that are commonly used by auto mechanics. In this example, we use customer reviews that describe experiences with various mechanics.
 
-> **Note**: The Jupyter Notebook included in the project has been cleared of output. If you would like to see the notebook that has already been completed with output, refer to the [example notebook](https://github.com/IBM/dl-learning-path-assets/tree/main/fundamentals-of-deeplearning/examples/RecurrentNeuralNetworkUsingTensorFlow_with_output.ipynb).
+We have included a set of pre-annotated synthetic reviews to get started, which you can [download](https://github.com/IBM/virtual-insurance-assistant/blob/master/data/wks/corpus-e6e25540-9c54-11ea-b92e-afac3e68cacf.zip).
 
-### Read through the notebook
+If you want to train a data model with some actual survey data, you can use the [Yelp data set](https://www.kaggle.com/c/yelp-recruiting/data), which you can access subject to the Yelp Terms of Use. This data set has a JSON file that includes millions of reviews of auto mechanic shops around the United States. Each review must be placed into individual .txt files.
 
-Spend some time looking through the sections of the notebook to get an overview. A notebook is composed of text (markdown or heading) cells and code cells. The markdown cells provide comments on what the code is designed to do.
+After collecting the documents, they'll need to be uploaded to Watson Knowledge Studio. Log in to your Watson Knowledge Studio instance, and click **Documents**.
 
-You run cells individually by highlighting each cell, then either clicking **Run** at the top of the notebook or using the keyboard shortcut to run the cell (**Shift + Enter **, but this can vary based on the platform). While the cell is running, an asterisk (`[*]`) shows up to the left of the cell. When that cell has finished running, a sequential number appears (for example, `[17]`).
+1. Click **Upload Document Sets**.
 
-> **Note**: Some of the comments in the notebook are directions for you to modify specific sections of the code. Perform any changes as indicated before running the cell.
+    ![Uploading data sets](images/image4.png)
 
-The notebook is divided into multiple sections.
+1. Upload your documents by dragging them to the **Add a Document Set** section.
 
-* Section 1 gives an introduction to Language Modeling.
-* Section 2 provides information about the Penn Treebank dataset which is being used to train and validate the model being built in this tutorial.
-* Section 3 gives an introduction to Word Embeddings.
-* Section 4 contains the code to build the LSTM model for Language Modeling.
-* Section 5 contains the code to train, validate and test the model.
+    ![Adding a document set](images/upload_corpus.png)
 
-### Run the notebook
+### Annotate documents
 
-1. Run the code cells in the notebook starting with the ones in section 4. The first few cells bring in the required modules such as tensorflow, numpy, reader and the dataset.
+After creating the Entity and Relation Types, you can add the annotation, which maps each document's words and phrases to your defined entities.
 
-> **Note**: The second code cell checks for the version of TensorFlow. The notebook only works with TensorFlow version 2.2.0-rc0, therefore, if an error is thrown here, you will need to ensure that you have installed TensorFlow version 2.2.0-rc0 in the first code cell. 
+1. Click **Machine Learning Model**, then **Annotations**.
 
-![TensorFlow Version error](images/tensorflow-version-error.png)
+    ![Annotations window](images/image9.png)
 
-> **Note**: If you get the error in spite of installing TensorFlow version 2.2.0-rc0, your changes are not being picked up and you will need to restart the kernel by clicking on "Kernel"->"Restart and Clear Output". Wait until all the outputs disappear and then your changes should be picked up.
+1. Locate the Document set that you uploaded earlier, and click **Annotate**.
 
-![Restart kernel](images/restart-kernel.png)
+    ![Locating document set](images/image10.png)
 
-1. The training, validation and testing of the model does not happen until the last code cell. Due to the number of epochs and the sheer size of the dataset, running this cell can take about 3 hours.
+1. Begin annotating all mentions in the document that reference a defined Entity by selecting each relevant word or phrase.
 
-![Train, test, validate](images/train-test-validate.png)
+1. Click the corresponding Entity Type in the menu on the right.
 
-## Reducing the notebook execution time
+    We apply the following annotations in the image.
 
-There are a number of ways in which you can reduce the time required for executing the notebook, i.e., the time needed to train and validate the model. While all of these methds will affect the performance of the model, some will cause a drastic change in performance.
+    * *SUVs* and *Motorcycles* can be labeled as a *Vehicle* and sub entity *Type*.
+    * *Glass Repair* and *Body Work* can be labeled as the *Repair* entity and *Glass* / *Body* subtype.
+    * *Joe's Auto Repair*, *Joe*, *Lydia*, and *they* refer to the mechanics.
 
-1. Fewer training epochs
+    ![Annotating text](images/annotate.png)
 
-The number of epochs set for training the model in the notebook is 15. You can reduce the number of epochs by changing the value of `max_epochs`.
+1. Define the relationships between entities by clicking **Relation**, which is shown in black in the following image.
 
-![Change the number of epochs](images/change-number-of-epochs.png)
+    In this example, *My* is a reference to the customer or reviewer. *Car* is owned by the customer, so it is labeled as a *Vehicle* entity and has the *belongsTo* relation with the customer. The mention *suspension* has the *Repair* entity and has a *needsRepairType* relationship with the car.
 
-A lower number of epochs may not bring down the model perplexity, resulting in poor performance of the model. On the other hand, an extremely higher number of epochs can cause overfitting, which will also result in poor model performance.
+    ![Defining relations](images/relations.png)
 
-1. Smaller dataset
+1. Add coreferences, which occur when there are multiple different mentions that reference the same entity. In this case, *Joe*, *his*, and *he* all refer to the same *Mechanic* entity. To bind them together, select **Coreference**, and click each reference. Then, double-click the last entity mention to apply the coreference.
 
-Reducing the size of the dataset is another method to reduce the amount of time required for training. However, one should note that the this can negatively impact model performance. The model will be better trained when it is trained on a large amount of varied data.
+    After this is successfully applied, a small number should appear under each coreference.
 
-1. Use GPUs to increase processing power
+    ![Adding coreferences](images/coference.png)
 
-You can make use of the GPU (Graphics Processing Unit) environments available within Watson Studio in order to accelerate model training. With GPU environments, you can reduce the training time needed for compute-intensive machine learning models you create in a notebook. With more compute power, you can run more training iterations while fine-tuning your machine learning models.
+### Generate a machine learning model
 
-**Note**: GPU environments are only available with paid plans and not with the Lite (Free) Watson Studio plan. See the [Watson Studio pricing plans](https://cloud.ibm.com/catalog/services/watson-studio)
+After annotating a few documents, you can train a machine learning model that annotates the remaining unlabeled documents. This model can also be exposed through an API, which we show in the next step.
 
-1. Early stopping
+1. Create the model by selecting **Performance**.
 
-You can also make use of EarlyStopping in order to improve training time. EarlyStopping stops training when a monitored metric has stopped improving. So, for example, you can specify that the training needs to stop if there is no improvement in perplexity for 3 consecutive epochs.
+1. Click **Train and evaluate**.
 
-Refer the notebook used in the [Demand forecasting using deep learning](https://developer.ibm.com/patterns/demand-forecasting-for-cash-vending-machines-using-deep-learning/) code pattern for an example of EarlyStopping.
+    ![Performance dashboard](images/image14.png)
 
-![Early Stopping Example](images/early-stopping-example.png)
+1. Click **Edit Settings** if you would like to select specific document sets to train on, or adjust your Test, Training, and Blind training subsets.
 
-## Summary
+    ![Training subsets](images/image15.png)
 
-In this tutorial, you learned about Language Modeling. You learned how to run a Jupyter Notebook using Watson Studio on IBM Cloud Pak for Data as a Service and how to create a Recurrent Neural Network model using TensorFlow based on the Long Short-Term Memory unit. Finally, you used this model to train and benchmark on the Penn Treebank dataset.
+1. Confirm your training settings, and click **Train & Evaluate**.
+
+    ![Training settings](images/image16.png)
+
+After training is complete, you can deploy your custom machine learning model to the Watson Natural Language Understanding service. This deployment makes your custom machine learning model through an API.
+
+1. Click **Versions** to view your trained models, then click **Deploy**.
+
+    ![Versions dashboard](images/image17.png)
+
+1. Select **Natural Language Understanding**, and click **Next**.
+
+    ![Selecting Natural Language Understanding](images/image18.png)
+
+1. Select your Region, Resource Group, and Service Name, and click **Deploy**.
+
+After the deployment is finished, you should see a new entry in the Deployed Models list. Expand it to get your Model ID.
+
+![Deployed models window](images/image19.png)
+
+### Deploy model to Watson Natural Language Understanding
+
+Now, you should be able to test the model by POSTing data to an API. To do so, you need the following credentials.
+
+* The Natural Language Understanding API Key
+* The Natural Language Understanding URL
+* The Watson Knowledge Studio Deployed Model ID (taken from the end of the previous section)
+
+The Natural Language Understanding API Key and URL can be found by navigating to your Watson Natural Language Understanding instance page and looking in the Credentials section.
+
+![Credentials](images/nlu_creds.png)
+
+Create a .json file using the following code. In your file, replace the `model_id` with the deployment ID generated from Watson Knowledge Studio. Also, insert the following text in the `<input text>` section: **My truck windshield was cracked, so I went to Joe's Auto shop and they replaced it for me. They did an excellent job. I would highly recommend them**.
+
+```
+{
+  "text": "<input_text>",
+  "features": {
+    "entities": {
+      "model": "<model_id>"
+    },
+    "keywords": {
+      "emotion": true,
+      "sentiment": true
+    },
+    "emotion": {
+        "sentiment": true
+    },
+    "categories": {
+      "sentiment": true
+    },
+    "relations": {
+      "model": "<model_id>"
+    },
+    "sentiment": {}
+  }
+}
+```
+
+Run a curl command to analyze the text with the generated machine learning model. Be sure to update the `nluApiKey` and `nluUrl` fields with your service credentials. Also, add the path to your .json file.
+
+```
+curl -X POST -H "Content-Type: application/json" -u "apikey:{apikey}" -d @parameters.json "{url}/v1/analyze?version=2021-08-01"
+
+```
+
+In the sentiment section, you see that the review was labeled as positive. And in the entities section, you'll be able to recognize which repairs were completed.
+
+```
+"sentiment": {
+  "document": {
+    "score": 0.952598,
+    "label": "positive"
+  }
+},
+```
+
+```
+"entities": [
+  {
+    "type": "Repair",
+    "text": "windshield",
+    "disambiguation": {
+      "subtype": [
+        "Glass"
+      ]
+    },
+    "count": 1,
+    "confidence": 0.994622
+  },
+```
+
+### Conclusion
+
+In this tutorial, you learned how to annotate a set of documents to accurately classify reviews. In the [accompanying pattern](/patterns/build-a-virtual-insurance-assistant-to-process-insurance-claims/), you'll see how to aggregate the natural language understanding results for each mechanic and determine the best mechanic for a given repair type. This tutorial is part of the [Build a customer care solution](/articles/insurance-industry-customer-care-solution) to help your customers manage their insurance claims and get automobile service information.
+
+
+
+## Workshop Resources
+
+- Login/Sign Up for [IBM Cloud](https://ibm.biz/WKS_NLU)
+
+- Hands-On Guide: <Link>
+
+- Slides: <Link>
+
+- Workshop Replay: <Link>
+  
+- Survey [Here](https://ibm.biz/WKSNLUSurvey)
+  
+## References
+Watson NLU [Demo](https://www.ibm.com/demos/live/natural-language-understanding/self-service/home)   
+Watson Knowledge Stdudio [Demo](https://www.ibm.com/demos/live/watson-knowledge-studio/self-service/home)  
+
+  
+## Done with the workshop? Here are some things you can try further
+- [Build a customer care solution](/articles/insurance-industry-customer-care-solution)
+
+
