@@ -70,7 +70,7 @@ https://www.crowdcast.io/e/custom-language-analysis
 - GitHub Repository - https://ibm.biz/WKSNLURepo
 - Workshop Slides - https://ibmdevelopermea.github.io/Easily-build-a-custom-language-analysis-model-with-Watson-Knowledge-Studio-NLU/
 - Survey - https://ibm.biz/WKSNLUSurvey
-- Follow along for the hands-on: https://ibm.biz/WKSNLURepo
+- Follow along for the hands-on: https://github.com/IBMDeveloperMEA/Easily-build-a-custom-language-analysis-model-with-Watson-Knowledge-Studio-NLU#CodeLab
 - Meetup page - https://www.meetup.com/IBM-Cloud-MEA/events/ 
 
 +++ {"slideshow": {"slide_type": "slide"}}
